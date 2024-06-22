@@ -13,7 +13,7 @@ const routes = [
     path: '/',
     name: 'Manager',
     component: () => import('../views/Manager.vue'),
-    redirect: '/home',
+    redirect: '/more-model',
     children: [
       { path: 'more-model', name: 'MoreModelChat', meta: { name: '多模型对话' }, component: () => import('../views/manager/MoreModelChat.vue') },
       { path: 'about', name: 'About', meta: { name: '关于' }, component: () => import('../views/manager/About.vue') },
