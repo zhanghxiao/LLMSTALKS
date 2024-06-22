@@ -4,7 +4,7 @@
 > 如果觉得不错麻烦帮忙点一次`Star⭐️`
 
 ## 项目简介
-本项目是一个参考了Chathub插件的UI逻辑，调用大模型api。结合了Vue和LLMAS的多模型并行回答助手。用户可以同时调用相同或者不同的大模型并行进行回答
+本项目是一个参考了Chathub插件的UI逻辑以及MarkMap-OpenAi-ChatGpt的vue调用API逻辑，调用大模型api。结合了Vue和LLMAS的多模型并行回答助手。用户可以同时调用相同或者不同的大模型并行进行回答
 
 ## 效果演示
 ![image](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/46d2c46e-aa04-43ad-9ccc-8e584cc54bab)
@@ -66,3 +66,7 @@
 
 6. **部署项目**：
     将`dist`文件夹中的内容上传到你的服务器或静态文件托管服务（如Vercel、Netlify等）。
+
+## 鸣谢
+[chathub]([https://github.com/PastKing/MarkMap-OpenAi-ChatGpt](https://github.com/chathub-dev/chathub))
+[mindmap-generator](https://github.com/PastKing/MarkMap-OpenAi-ChatGpt)
