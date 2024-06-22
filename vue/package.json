@@ -24,8 +24,7 @@
     "sass-loader": "^14.2.1",
     "vue": "^2.6.14",
     "vue-router": "^3.5.1",
-    "wangeditor": "^4.7.15",
-"marked": "^4.0.0"
+    "wangeditor": "^4.7.15"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~5.0.0",

@@ -55,9 +55,7 @@
 </radialGradient>
 </defs>
 </svg>
-
-
-        <nav>
+<nav>
           <a href="#" :class="{ 'active': $route.path === '/more-model' }" @click="$router.push('/more-model')">
             <i class="el-icon-chat-line-round"></i>
             <span v-if="!isCollapse">多模型对话</span>
@@ -73,7 +71,7 @@
         </nav>
       </el-aside>
 
-      <el-container>
+      <el-container class="main-container">
         <!-- 头部区域 -->
         <el-header>
           <i :class="collapseIcon" style="font-size: 26px; cursor: pointer;" @click="handleCollapse"></i>
@@ -154,11 +152,14 @@ export default {
 }
 </script>
 
-
 <style scoped>
 .app-container {
   background-color: #8ED1FC;
   min-height: 100vh;
+}
+
+.el-container {
+  height: 100vh; /* 确保容器高度为视口高度 */
 }
 
 .sidebar {
@@ -166,11 +167,11 @@ export default {
   color: #333;
   padding: 10px;
   transition: width 0.3s ease;
-  height: 100vh;
+  height: 100vh; /* 确保侧边栏高度为视口高度 */
 }
 
 .sidebar.collapsed {
-  width: 60px;
+  width: 64px;
 }
 
 .sidebar nav {
@@ -218,6 +219,7 @@ export default {
 .el-main {
   background-color: transparent;
   color: #333;
+  flex-grow: 1; /* 确保 el-main 占满剩余空间 */
 }
 
 .el-dropdown-link {
@@ -228,11 +230,11 @@ export default {
 /* 移动端自动收起侧边栏 */
 @media (max-width: 768px) {
   .sidebar {
-    width: 60px;
+    width: 64px;
   }
   
   .sidebar.collapsed {
-    width: 60px;
+    width: 64px;
   }
   
   .sidebar nav a span {
@@ -240,4 +242,3 @@ export default {
   }
 }
 </style>
-

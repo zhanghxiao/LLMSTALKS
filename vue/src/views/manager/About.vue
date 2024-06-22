@@ -1,53 +1,40 @@
 <template>
-    <div>
-        <h1>关于我们</h1>
-        <div v-html="renderedMarkdown"></div>
-    </div>
+
+        <div class="about-content">
+            <h1>关于我们</h1>
+            <h2>LLMSTALKS多模型群聊助手</h2>
+            <blockquote>
+                本项目完全开源
+                <br>
+                如果觉得不错麻烦帮忙点一次 Star ⭐️
+            </blockquote>
+            <h3>作者：MistPeak</h3>
+            <h3>项目简介</h3>
+            <p>
+                本项目是一个参考了 Chathub 插件的 UI 逻辑以及 MarkMap-OpenAi-ChatGpt 的 vue 调用 API 逻辑，调用大模型 API。结合了 Vue 和 LLMAS 的多模型并行回答助手。用户可以同时调用相同或者不同的大模型并行进行回答。
+            </p>
+
+        </div>
+
 </template>
+
 <script>
-import marked from 'marked';
-
 export default {
-    name: 'About',
-    data() {
-        return {
-            markdownContent: `
-# LLMSTALKS多模型群聊助手
-
-> 本项目完全开源
-> 如果觉得不错麻烦帮忙点一次Star⭐️
-
-## 项目简介
-本项目是一个参考了Chathub插件的UI逻辑以及MarkMap-OpenAi-ChatGpt的vue调用API逻辑，调用大模型api。结合了Vue和LLMAS的多模型并行回答助手。用户可以同时调用相同或者不同的大模型并行进行回答
-
-## 效果演示
-![image](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/46d2c46e-aa04-43ad-9ccc-8e584cc54bab)
-`
-        };
-    },
-    computed: {
-        renderedMarkdown() {
-            return marked(this.markdownContent);
-        }
-    }
+    name: 'About'
 };
 </script>
+
 <style scoped>
-h1 {
-    font-size: 2em;
-    margin-bottom: 0.5em;
-}
 
-div {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-}
+.about-content {
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+  }
 
-blockquote {
-    padding: 10px 20px;
-    margin: 0 0 20px;
-    border-left: 5px solid #eee;
-    background-color: #f9f9f9;
+h1, h2, h3, p {
+    margin: 10px 0;
 }
 
 img {
@@ -57,6 +44,13 @@ img {
     border-radius: 4px;
     padding: 5px;
     display: block;
-    margin: 0 auto;
+    margin: 10px 0;
+}
+
+blockquote {
+    padding: 10px 20px;
+    margin: 0 0 20px;
+    border-left: 5px solid #eee;
+    background-color: #f9f9f9;
 }
 </style>
