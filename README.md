@@ -37,7 +37,7 @@
 1. **克隆项目**：
     ```bash
     git clone https://github.com/zhanghxiao/LLMSTALKS.git
-    cd mindmap-generator
+    cd vue
     ```
 
 2. **安装依赖**：
