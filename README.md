@@ -67,6 +67,46 @@
 6. **部署项目**：
     将`dist`文件夹中的内容上传到你的服务器或静态文件托管服务（如Vercel、Netlify等）。
 
-## 鸣谢
-[chathub]([https://github.com/PastKing/MarkMap-OpenAi-ChatGpt](https://github.com/chathub-dev/chathub))
-[mindmap-generator](https://github.com/PastKing/MarkMap-OpenAi-ChatGpt)
+## 鸣谢参考项目
+[chathub]([https://github.com/PastKing/MarkMap-OpenAi-ChatGpt]：(https://github.com/chathub-dev/chathub))：提供UI参考
+[mindmap-generator](https://github.com/PastKing/MarkMap-OpenAi-ChatGpt)：提供UI和技术栈参考
+[songquanpeng/one-api](https://github.com/songquanpeng/one-api)：提供:了OpenAI 接口管理 & 分发系统
+
+## 鸣谢大佬：
+始皇 [Neo](https://linux.do/u/neo) 的New和API站，现在可以白嫖官网gpt4蛋和放心用官转API了
+[PastKing](https://linux.do/u/PastKing)大佬提供的[mindmap-generator](https://github.com/PastKing/MarkMap-OpenAi-ChatGpt)项目的启发，以及右上角的那个头像我挺喜欢的就保留了
+
+**项目仓库地址：**
+https://github.com/zhanghxiao/LLMSTALKS
+
+**部署方式:**
+支持vue框架的部署方式均可，比如vercel，CF PAG，codesandbox.....
+
+**CF PAG部署教程：**
+![image|690x331, 50%](upload://jjnaeoCxvNN94B6tiK3otYi0CKv.png)
+![image|690x331, 50%](upload://ruMbfUbenXTA0v5xLNd3HgGUmZ7.png)
+![image|636x500, 50%](upload://eLXNkgkVEn4INaJCYtW8B5BWKI.png)
+![image|690x381, 50%](upload://mBSvUgUoVErRJEiI7cMOHeectGC.png)
+接下来耐心等待：
+![image|690x460, 50%](upload://zkOvtvBVXipGsRgNwj7TiJBPBTZ.png)
+![image|690x428, 50%](upload://nTM9alwRMWgHFAx1dC5zbdpNbo9.png)
+接下来可以自己选择是否加自定义域名什么的
+
+
+**Vercel部署教程：**
+![image|690x296, 50%](upload://fkpJyYI0WLn6DX1ibwyUal09fZe.png)
+![image|690x331, 50%](upload://6J95aRpVKml2GnqLerQmhLG372D.png)
+![image|690x301, 50%](upload://8tR158bfgzUuSfKZqlr7cC5fBtn.png)
+
+继续等待一下
+![image|690x296, 50%](upload://o1Nj8zUsx5IZkXVoD6cm6NyW3bl.png)
+下面就成功了：
+![image|690x308, 50%](upload://1FRt6lfyZPlnr73ZWKkhYHcA8LN.png)
+接下来访问：
+![image|690x331, 50%](upload://vfr5LjtA1yf2e4yeGeRr4JIvHoX.png)
+
+**演示站暂时就**：
+CF演示站：https://llmstalks1.pages.dev/
+Vercel演示站：https://llmstalks.vercel.app/
+**学生党开源小项目 API KEY不多，各位轻虐**，推荐自己部署，自主优化，点个star,记着哥们开的小头就行 :rofl:
+项目暂时只做成了单轮对话节省API KEY,也还没来得及增加markdown格式文本的识别，有bug见谅，后续暑期抽空解决
