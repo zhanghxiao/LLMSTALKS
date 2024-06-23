@@ -100,7 +100,7 @@ export default {
         },
         adjustChatWindows(layout) {
             const currentLength = this.chatWindows.length;
-            const targetLength = this.isMobile && (layout === 3 || layout === 4) ? layout + 1 : layout;
+            const targetLength = this.isMobile ? layout + 1 : layout;
             
             if (currentLength < targetLength) {
                 for (let i = currentLength; i < targetLength; i++) {
@@ -110,7 +110,7 @@ export default {
                 this.chatWindows.splice(targetLength);
             }
             
-            this.showEmptyWindow = this.isMobile && (layout === 3 || layout === 4);
+            this.showEmptyWindow = this.isMobile;
         },
         async sendMessage() {
             if (!this.userInput.trim()) return;
@@ -246,7 +246,7 @@ export default {
 
 .chat-windows.mobile.layout-2 {
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
 }
 
 .chat-windows.mobile.layout-3 {
@@ -411,7 +411,7 @@ export default {
     }
 
     .chat-windows {
-        height: calc(100% - 140px); /* 增加高度以适应额外的空白窗口 */
+        height: calc(100% - 160px); /* 增加高度以适应所有布局的额外空白窗口 */
         margin-bottom: 10px;
     }
 
@@ -422,6 +422,7 @@ export default {
         right: 0;
         background-color: #fff;
         margin-top: 10px;
+        z-index: 1000; /* 确保输入区域始终在顶部 */
     }
 }
 </style>
