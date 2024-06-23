@@ -83,6 +83,7 @@ https://github.com/zhanghxiao/LLMSTALKS
 支持vue框架的部署方式均可，比如vercel，CF PAG，codesandbox.....
 
 **CF PAG部署教程：**
+
 ![image|690x331, 50%](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/b1021e55-f492-42db-af79-9df6edc11d33)
 
 ![image|690x331, 50%](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/d9cbf233-88b1-4002-bc88-0f6bb801b421)
@@ -92,6 +93,7 @@ https://github.com/zhanghxiao/LLMSTALKS
 ![image|690x381, 50%](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/5ef7fdc8-ca02-4122-ac51-a092f97bc22f)
 
 接下来耐心等待：
+
 ![image|690x460, 50%](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/7a4c924e-6f14-44a4-a874-dcb4c7ecc832)
 
 ![image|690x428, 50%](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/50d2c432-2d58-4ad0-9e17-788b1e827218)
@@ -100,6 +102,7 @@ https://github.com/zhanghxiao/LLMSTALKS
 
 
 **Vercel部署教程：**
+
 ![image|690x296, 50%](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/abfb4caa-8e37-4289-a110-52e9dd879f6a)
 
 ![image|690x296, 50%](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/6999b36d-7400-4daa-b8b9-6e6514f9f3e1)
@@ -108,12 +111,15 @@ https://github.com/zhanghxiao/LLMSTALKS
 
 
 继续等待一下
+
 ![image|690x296, 50%](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/79babc18-e117-4825-859d-efff9235a8f0)
 
 下面就成功了：
+
 ![image|690x308, 50%](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/a5c7a585-8885-4333-9a80-d1b2067dc55c)
 
 接下来访问：
+
 ![image|690x331, 50%](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/12b5ee6d-e162-4a5b-b854-14882564d963)
 
 
