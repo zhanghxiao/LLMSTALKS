@@ -14,6 +14,7 @@
                         </div>
                     </div>
                 </div>
+                <div v-if="isMobile && (layout === 3 || layout === 4)" class="chat-window empty-window"></div>
             </div>
             <div class="input-area">
                 <div class="mobile-layout-buttons" v-if="isMobile">
@@ -69,132 +70,6 @@
     </div>
 </template>
 
-<script>
-export default {
-    name: 'MultiModelChat',
-    data() {
-        return {
-            userInput: '',
-            chatWindows: [
-                { messages: [], selectedModel: 'gpt-3.5-turbo-0125' },
-                { messages: [], selectedModel: 'gpt-3.5-turbo-0125' }
-            ],
-            models: this.getModelsFromEnv(),
-            layout: 2,
-            isMobile: false
-        };
-    },
-    methods: {
-        getModelsFromEnv() {
-            const modelsEnv = process.env.VUE_APP_MODELS || '';
-            return modelsEnv.split(',').map(model => model.trim());
-        },
-        setLayout(layout) {
-            this.layout = layout;
-            this.adjustChatWindows(layout);
-            this.$nextTick(() => {
-                this.adjustChatWindowHeight();
-            });
-        },
-        adjustChatWindows(layout) {
-            const currentLength = this.chatWindows.length;
-            if (currentLength < layout) {
-                for (let i = currentLength; i < layout; i++) {
-                    this.chatWindows.push({ messages: [], selectedModel: this.models[0] });
-                }
-            } else if (currentLength > layout) {
-                this.chatWindows.splice(layout);
-            }
-        },
-        async sendMessage() {
-            if (!this.userInput.trim()) return;
-
-            const userMessageContent = this.userInput;
-            this.userInput = '';
-
-            const sendRequestToWindow = async (chatWindow, index) => {
-                const userMessage = { id: Date.now() + index, role: 'user', content: userMessageContent };
-                chatWindow.messages.push(userMessage);
-
-                const assistantMessage = { id: Date.now() + index + 1000, role: 'assistant', content: '' };
-                chatWindow.messages.push(assistantMessage);
-
-                try {
-                    const response = await fetch(
-                        `${process.env.VUE_APP_API_BASE_URL}/v1/chat/completions`,
-                        {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${process.env.VUE_APP_API_KEY}`
-                            },
-                            body: JSON.stringify({
-                                messages: [
-                                    { role: 'system', content: '你是一个友善的助手' },
-                                    { role: 'user', content: userMessageContent }
-                                ],
-                                stream: true,
-                                model: chatWindow.selectedModel,
-                                temperature: 0.5,
-                                presence_penalty: 2
-                            })
-                        }
-                    );
-
-                    const reader = response.body.getReader();
-                    const decoder = new TextDecoder('utf-8');
-
-                    while (true) {
-                        const { done, value } = await reader.read();
-                        if (done) break;
-                        const chunk = decoder.decode(value, { stream: true });
-                        const lines = chunk.split('\n').filter(line => line.trim());
-                        for (const line of lines) {
-                            if (line === 'data: [DONE]') return;
-                            if (line.startsWith('data: ')) {
-                                const data = JSON.parse(line.slice(6));
-                                if (data.choices && data.choices.length > 0) {
-                                    const delta = data.choices[0].delta;
-                                    if (delta && delta.content) {
-                                        assistantMessage.content += delta.content;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } catch (error) {
-                    assistantMessage.content = `请求失败: ${error.message}`;
-                }
-            };
-
-            await Promise.all(this.chatWindows.map(sendRequestToWindow));
-
-            this.$nextTick(() => {
-                this.adjustChatWindowHeight();
-            });
-        },
-        handleResize() {
-            this.isMobile = window.innerWidth <= 768;
-            this.$nextTick(() => {
-                this.adjustChatWindowHeight();
-            });
-        },
-        adjustChatWindowHeight() {
-            const chatBodies = this.$refs.chatWindows.querySelectorAll('.chat-body');
-            chatBodies.forEach(chatBody => {
-                chatBody.scrollTop = chatBody.scrollHeight;
-            });
-        }
-    },
-    mounted() {
-        window.addEventListener('resize', this.handleResize);
-        this.handleResize();
-    },
-    beforeDestroy() {
-        window.removeEventListener('resize', this.handleResize);
-    }
-};
-</script>
 <style scoped>
 .container {
     display: flex;
@@ -254,6 +129,12 @@ export default {
     overflow: hidden;
     display: flex;
     flex-direction: column;
+}
+
+.chat-window.empty-window {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
 }
 
 .chat-header {
@@ -409,3 +290,130 @@ export default {
     }
 }
 </style>
+
+<script>
+export default {
+    name: 'MultiModelChat',
+    data() {
+        return {
+            userInput: '',
+            chatWindows: [
+                { messages: [], selectedModel: 'gpt-3.5-turbo-0125' },
+                { messages: [], selectedModel: 'gpt-3.5-turbo-0125' }
+            ],
+            models: this.getModelsFromEnv(),
+            layout: 2,
+            isMobile: false
+        };
+    },
+    methods: {
+        getModelsFromEnv() {
+            const modelsEnv = process.env.VUE_APP_MODELS || '';
+            return modelsEnv.split(',').map(model => model.trim());
+        },
+        setLayout(layout) {
+            this.layout = layout;
+            this.adjustChatWindows(layout);
+            this.$nextTick(() => {
+                this.adjustChatWindowHeight();
+            });
+        },
+        adjustChatWindows(layout) {
+            const currentLength = this.chatWindows.length;
+            if (currentLength < layout) {
+                for (let i = currentLength; i < layout; i++) {
+                    this.chatWindows.push({ messages: [], selectedModel: this.models[0] });
+                }
+            } else if (currentLength > layout) {
+                this.chatWindows.splice(layout);
+            }
+        },
+        async sendMessage() {
+            if (!this.userInput.trim()) return;
+
+            const userMessageContent = this.userInput;
+            this.userInput = '';
+
+            const sendRequestToWindow = async (chatWindow, index) => {
+                const userMessage = { id: Date.now() + index, role: 'user', content: userMessageContent };
+                chatWindow.messages.push(userMessage);
+
+                const assistantMessage = { id: Date.now() + index + 1000, role: 'assistant', content: '' };
+                chatWindow.messages.push(assistantMessage);
+
+                try {
+                    const response = await fetch(
+                        `${process.env.VUE_APP_API_BASE_URL}/v1/chat/completions`,
+                        {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${process.env.VUE_APP_API_KEY}`
+                            },
+                            body: JSON.stringify({
+                                messages: [
+                                    { role: 'system', content: '你是一个友善的助手' },
+                                    { role: 'user', content: userMessageContent }
+                                ],
+                                stream: true,
+                                model: chatWindow.selectedModel,
+                                temperature: 0.5,
+                                presence_penalty: 2
+                            })
+                        }
+                    );
+
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder('utf-8');
+
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        const chunk = decoder.decode(value, { stream: true });
+                        const lines = chunk.split('\n').filter(line => line.trim());
+                        for (const line of lines) {
+                            if (line === 'data: [DONE]') return;
+                            if (line.startsWith('data: ')) {
+                                const data = JSON.parse(line.slice(6));
+                                if (data.choices && data.choices.length > 0) {
+                                    const delta = data.choices[0].delta;
+                                    if (delta && delta.content) {
+                                        assistantMessage.content += delta.content;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (error) {
+                    assistantMessage.content = `请求失败: ${error.message}`;
+                }
+            };
+
+            await Promise.all(this.chatWindows.map(sendRequestToWindow));
+
+            this.$nextTick(() => {
+                this.adjustChatWindowHeight();
+            });
+        },
+        handleResize() {
+            this.isMobile = window.innerWidth <= 768;
+            this.$nextTick(() => {
+                this.adjustChatWindowHeight();
+            });
+        },
+        adjustChatWindowHeight() {
+            const chatBodies = this.$refs.chatWindows.querySelectorAll('.chat-body');
+            chatBodies.forEach(chatBody => {
+                chatBody.scrollTop = chatBody.scrollHeight;
+            });
+        }
+    },
+    mounted() {
+        window.addEventListener('resize', this.handleResize);
+        this.handleResize();
+    },
+    beforeDestroy() {
+        window.removeEventListener('resize', this.handleResize);
+    }
+};
+</script>
