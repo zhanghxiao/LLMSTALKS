@@ -83,27 +83,39 @@ https://github.com/zhanghxiao/LLMSTALKS
 支持vue框架的部署方式均可，比如vercel，CF PAG，codesandbox.....
 
 **CF PAG部署教程：**
-![image|690x331, 50%](upload://jjnaeoCxvNN94B6tiK3otYi0CKv.png)
-![image|690x331, 50%](upload://ruMbfUbenXTA0v5xLNd3HgGUmZ7.png)
-![image|636x500, 50%](upload://eLXNkgkVEn4INaJCYtW8B5BWKI.png)
-![image|690x381, 50%](upload://mBSvUgUoVErRJEiI7cMOHeectGC.png)
+![image|690x331, 50%](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/b1021e55-f492-42db-af79-9df6edc11d33)
+
+![image|690x331, 50%](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/d9cbf233-88b1-4002-bc88-0f6bb801b421)
+
+![image|636x500, 50%](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/a672d807-2b4a-430c-8b62-849774ac457d)
+
+![image|690x381, 50%](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/5ef7fdc8-ca02-4122-ac51-a092f97bc22f)
+
 接下来耐心等待：
-![image|690x460, 50%](upload://zkOvtvBVXipGsRgNwj7TiJBPBTZ.png)
-![image|690x428, 50%](upload://nTM9alwRMWgHFAx1dC5zbdpNbo9.png)
+![image|690x460, 50%](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/7a4c924e-6f14-44a4-a874-dcb4c7ecc832)
+
+![image|690x428, 50%](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/50d2c432-2d58-4ad0-9e17-788b1e827218)
+
 接下来可以自己选择是否加自定义域名什么的
 
 
 **Vercel部署教程：**
-![image|690x296, 50%](upload://fkpJyYI0WLn6DX1ibwyUal09fZe.png)
-![image|690x331, 50%](upload://6J95aRpVKml2GnqLerQmhLG372D.png)
-![image|690x301, 50%](upload://8tR158bfgzUuSfKZqlr7cC5fBtn.png)
+![image|690x296, 50%](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/abfb4caa-8e37-4289-a110-52e9dd879f6a)
+
+![image|690x296, 50%](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/6999b36d-7400-4daa-b8b9-6e6514f9f3e1)
+
+![image|690x296, 50%](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/b4d2a8d9-87e9-479e-b412-1fc15546e181)
+
 
 继续等待一下
-![image|690x296, 50%](upload://o1Nj8zUsx5IZkXVoD6cm6NyW3bl.png)
+![image|690x296, 50%](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/79babc18-e117-4825-859d-efff9235a8f0)
+
 下面就成功了：
-![image|690x308, 50%](upload://1FRt6lfyZPlnr73ZWKkhYHcA8LN.png)
+![image|690x308, 50%](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/a5c7a585-8885-4333-9a80-d1b2067dc55c)
+
 接下来访问：
-![image|690x331, 50%](upload://vfr5LjtA1yf2e4yeGeRr4JIvHoX.png)
+![image|690x331, 50%](https://github.com/zhanghxiao/LLMSTALKS/assets/137479165/12b5ee6d-e162-4a5b-b854-14882564d963)
+
 
 **演示站暂时就**：
 CF演示站：https://llmstalks1.pages.dev/
