@@ -243,6 +243,10 @@ export default {
     grid-template-columns: 1fr;
 }
 
+.chat-windows.mobile.layout-4 {
+    grid-template-rows: repeat(4, 1fr);
+}
+
 .chat-window {
     background-color: #fff;
     border-radius: 20px;
@@ -405,4 +409,3 @@ export default {
     }
 }
 </style>
-
