@@ -9,7 +9,9 @@
                 </div>
                 <div class="chat-body">
                     <div v-for="message in messages" :key="message.id" :class="['message', message.role]">
-                        <div class="content">{{ message.content }}</div>
+                        <div class="content">
+                            <MarkdownRenderer :content="message.content" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -22,8 +24,13 @@
 </template>
 
 <script>
+import MarkdownRenderer from '@/components/MarkdownRenderer.vue';
+
 export default {
     name: 'SingleModelChat',
+    components: {
+        MarkdownRenderer
+    },
     data() {
         return {
             userInput: '',
@@ -212,22 +219,25 @@ export default {
 }
 
 .content {
-    padding: 10px;
-    border-radius: 18px;
+    padding: 1px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 13px;
     word-wrap: break-word;
-    white-space: pre-wrap;
+    white-space: normal;
     max-width: 100%;
+    line-height: 1.1;
 }
 
 .user .content {
     background-color: #e0f7fa;
-    color: #000;
+    color: #505050;
     border-bottom-right-radius: 4px;
 }
 
 .assistant .content {
     background-color: #e0f7fa;
-    color: #000;
+    color: #505050;
     border-bottom-left-radius: 4px;
 }
 </style>
