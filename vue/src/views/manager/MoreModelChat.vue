@@ -84,8 +84,8 @@ export default {
         return {
             userInput: '',
             chatWindows: [
-                { messages: [], selectedModel: 'gpt-3.5-turbo-0125' },
-                { messages: [], selectedModel: 'gpt-3.5-turbo-0125' }
+                { messages: [], selectedModel: 'gpt-3.5-turbo' },
+                { messages: [], selectedModel: 'gpt-3.5-turbo' }
             ],
             models: this.getModelsFromEnv(),
             layout: 2,
