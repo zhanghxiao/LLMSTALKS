@@ -50,7 +50,7 @@
     ```
     VUE_APP_API_BASE_URL=https://api.openai.com
     VUE_APP_API_KEY=your_openai_api_key
-    VUE_APP_MODELS=gpt-3.5-turbo-0125,讯飞星火v3.5,讯飞星火v3.1,讯飞星火v2.1,谷歌Gemini-pro,通义千问-plus,智谱glm-4,腾讯混元,百度ERNIE-Speed-8K,gpt-4-copilot
+    VUE_APP_MODELS=gpt-4o-mini,讯飞星火v3.5,讯飞星火v3.1,讯飞星火v2.1,谷歌Gemini-pro,通义千问-plus,智谱glm-4,腾讯混元,百度ERNIE-Speed-8K,gpt-4-copilot
 
     ```
 

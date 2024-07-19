@@ -36,7 +36,7 @@ export default {
             userInput: '',
             messages: [],
             models: this.getModelsFromEnv(),
-            selectedModel: 'gpt-3.5-turbo' // 默认选择的模型
+            selectedModel: 'gpt-4o-mini' // 默认选择的模型
         };
     },
     methods: {
