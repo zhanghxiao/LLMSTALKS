@@ -134,6 +134,7 @@ export default {
             
             this.showEmptyWindow = this.isMobile;
         },
+        
         toggleSearch(index) {
             const chatWindow = this.chatWindows[index];
             const toggleMessage = chatWindow.isSearchEnabled
@@ -255,6 +256,7 @@ export default {
                 chatBody.scrollTop = chatBody.scrollHeight;
             });
         }
+        
     },
     mounted() {
         window.addEventListener('resize', this.handleResize);
@@ -266,8 +268,7 @@ export default {
 };
 </script>
 
-<style scoped>
-.container {
+container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -317,6 +318,7 @@ export default {
     grid-template-columns: 1fr;
     grid-template-rows: repeat(4, 1fr);
 }
+
 .chat-windows.mobile.layout-4 {
     grid-template-columns: 1fr;
     grid-template-rows: repeat(5, 1fr);
