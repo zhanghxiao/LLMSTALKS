@@ -52,7 +52,7 @@ export default {
             models: this.getModelsFromEnv(),
             selectedModel: 'gpt-4o-mini',
             isSearchEnabled: false,
-            SEARCH_API_URL: 'https://mistpe-search.hf.space/search'
+            currentSession: []
         };
     },
     methods: {
@@ -73,50 +73,59 @@ export default {
             const toggleMessage = this.isSearchEnabled
                 ? "搜索功能已开启，我现在可以上网查资料啦！😎"
                 : "搜索功能已关闭，接下来就看我自由发挥了";
-            this.messages.push({ id: Date.now(), role: 'system', content: toggleMessage });
+            this.addMessage('assistant', toggleMessage);
+        },
+        addMessage(role, content, searchResults = null) {
+            const message = { id: Date.now(), role, content };
+            if (searchResults) {
+                message.searchResults = searchResults;
+            }
+            this.messages.push(message);
+            if (role !== 'system') {
+                this.currentSession.push({ role, content });
+            }
+            this.$nextTick(() => {
+                const chatBody = this.$el.querySelector('.chat-body');
+                chatBody.scrollTop = chatBody.scrollHeight;
+            });
         },
         async sendMessage() {
             if (!this.userInput.trim()) return;
 
-            const userMessage = { id: Date.now(), role: 'user', content: this.userInput };
-            this.messages.push(userMessage);
+            this.addMessage('user', this.userInput);
             const userMessageContent = this.userInput;
             this.userInput = '';
-
-            const assistantMessage = { id: Date.now(), role: 'assistant', content: '' };
-            this.messages.push(assistantMessage);
 
             try {
                 let aiResponse;
                 if (this.isSearchEnabled) {
                     const searchResponse = await this.performSearch(userMessageContent);
                     if (searchResponse.search_results && searchResponse.search_results.length > 0) {
-                        assistantMessage.searchResults = searchResponse.search_results;
                         const summaryPrompt = `基于以下搜索结果回答用户的问题：
 搜索结果：${JSON.stringify(searchResponse.search_results)}
 用户问题：${userMessageContent}`;
                         aiResponse = await this.getAIResponse(summaryPrompt);
+                        this.addMessage('assistant', aiResponse, searchResponse.search_results);
                     } else {
                         aiResponse = "抱歉，我没有找到相关的搜索结果。让我试试直接回答你的问题。";
+                        this.addMessage('assistant', aiResponse);
                     }
                 } else {
                     aiResponse = await this.getAIResponse(userMessageContent);
+                    this.addMessage('assistant', aiResponse);
                 }
 
-                assistantMessage.content = aiResponse;
-                this.$forceUpdate();
-
                 // 保持最多6组上下文
-                if (this.messages.length > 12) {
-                    this.messages = this.messages.slice(-12);
+                if (this.currentSession.length > 12) {
+                    this.currentSession = this.currentSession.slice(-12);
                 }
             } catch (error) {
                 console.error('Error:', error);
-                assistantMessage.content = '对不起，我无法处理您的请求。';
+                this.addMessage('assistant', '对不起，我无法处理您的请求。');
             }
         },
         async performSearch(query) {
-            const response = await fetch(this.SEARCH_API_URL, {
+            const response = await fetch('https://mistpe-search.hf.space/search', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -140,6 +149,7 @@ export default {
                     body: JSON.stringify({
                         messages: [
                             { role: 'system', content: `你是一个友善的助手` },
+                            ...this.currentSession,
                             { role: 'user', content: prompt }
                         ],
                         stream: true,
@@ -303,6 +313,7 @@ export default {
 .search-toggle {
     display: flex;
     align-items: center;
+    margin-left: 10px;
 }
 
 .switch {
@@ -328,6 +339,7 @@ export default {
     bottom: 0;
     background-color: #ccc;
     transition: .4s;
+    border-radius: 34px;
 }
 
 .slider:before {
@@ -339,26 +351,15 @@ export default {
     bottom: 4px;
     background-color: white;
     transition: .4s;
+    border-radius: 50%;
 }
 
 input:checked + .slider {
     background-color: #2196F3;
 }
 
-input:focus + .slider {
-    box-shadow: 0 0 1px #2196F3;
-}
-
 input:checked + .slider:before {
     transform: translateX(26px);
-}
-
-.slider.round {
-    border-radius: 34px;
-}
-
-.slider.round:before {
-    border-radius: 50%;
 }
 
 .search-results {
