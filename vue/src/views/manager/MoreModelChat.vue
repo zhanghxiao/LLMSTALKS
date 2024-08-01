@@ -8,12 +8,26 @@
                         <select v-model="chatWindow.selectedModel">
                             <option v-for="model in models" :key="model" :value="model">{{ model }}</option>
                         </select>
+                        <div class="search-toggle">
+                            <span>搜索功能</span>
+                            <label class="switch">
+                                <input type="checkbox" v-model="isSearchEnabled" @change="toggleSearch">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
                     </div>
                     <div class="chat-body">
                         <div v-for="message in chatWindow.messages" :key="message.id" :class="['message', message.role]">
                             <div class="content">
                                 <MarkdownRenderer :content="message.content" />
                             </div>
+                            <details v-if="message.searchResults" class="search-results">
+                                <summary>点击查看搜索结果</summary>
+                                <div v-for="result in message.searchResults" :key="result.href" class="search-result-item">
+                                    <h3><a :href="result.href" target="_blank">{{ result.title }}</a></h3>
+                                    <p>{{ result.body }}</p>
+                                </div>
+                            </details>
                         </div>
                     </div>
                 </div>
@@ -84,13 +98,15 @@ export default {
         return {
             userInput: '',
             chatWindows: [
-                { messages: [], selectedModel: 'gpt-4o-mini' },
-                { messages: [], selectedModel: 'gpt-4o-mini' }
+                { messages: [], selectedModel: 'gpt-4o-mini', currentSession: [] },
+                { messages: [], selectedModel: 'gpt-4o-mini', currentSession: [] }
             ],
             models: this.getModelsFromEnv(),
             layout: 2,
             isMobile: false,
-            showEmptyWindow: false
+            showEmptyWindow: false,
+            isSearchEnabled: false,
+            SEARCH_API_URL: 'https://mistpe-search.hf.space/search'
         };
     },
     methods: {
@@ -111,7 +127,7 @@ export default {
             
             if (currentLength < targetLength) {
                 for (let i = currentLength; i < targetLength; i++) {
-                    this.chatWindows.push({ messages: [], selectedModel: this.models[0] });
+                    this.chatWindows.push({ messages: [], selectedModel: this.models[0], currentSession: [] });
                 }
             } else if (currentLength > targetLength) {
                 this.chatWindows.splice(targetLength);
@@ -119,64 +135,65 @@ export default {
             
             this.showEmptyWindow = this.isMobile;
         },
+        toggleSearch() {
+            const toggleMessage = this.isSearchEnabled
+                ? "搜索功能已开启，我现在可以上网查资料啦！😎"
+                : "搜索功能已关闭，接下来就看我自由发挥了";
+            this.chatWindows.forEach(chatWindow => {
+                this.addMessage(chatWindow, 'system', toggleMessage);
+            });
+        },
+        addMessage(chatWindow, role, content, searchResults = null) {
+            const message = { id: Date.now(), role, content };
+            if (searchResults) {
+                message.searchResults = searchResults;
+            }
+            chatWindow.messages.push(message);
+            if (role !== 'system') {
+                chatWindow.currentSession.push({ role, content });
+            }
+            this.$nextTick(() => {
+                this.adjustChatWindowHeight();
+            });
+        },
         async sendMessage() {
             if (!this.userInput.trim()) return;
 
             const userMessageContent = this.userInput;
             this.userInput = '';
 
-            const sendRequestToWindow = async (chatWindow, index) => {
-                const userMessage = { id: Date.now() + index, role: 'user', content: userMessageContent };
-                chatWindow.messages.push(userMessage);
+            let searchResults = null;
+            if (this.isSearchEnabled) {
+                searchResults = await this.performSearch(userMessageContent);
+            }
 
-                const assistantMessage = { id: Date.now() + index + 1000, role: 'assistant', content: '' };
-                chatWindow.messages.push(assistantMessage);
+            const sendRequestToWindow = async (chatWindow) => {
+                this.addMessage(chatWindow, 'user', userMessageContent);
 
                 try {
-                    const response = await fetch(
-                        `${process.env.VUE_APP_API_BASE_URL}/v1/chat/completions`,
-                        {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${process.env.VUE_APP_API_KEY}`
-                            },
-                            body: JSON.stringify({
-                                messages: [
-                                    { role: 'system', content: '你是一个友善的助手' },
-                                    { role: 'user', content: userMessageContent }
-                                ],
-                                stream: true,
-                                model: chatWindow.selectedModel,
-                                temperature: 0.5,
-                                presence_penalty: 2
-                            })
+                    let aiResponse;
+                    if (this.isSearchEnabled && searchResults && searchResults.search_results && searchResults.search_results.length > 0) {
+                        const summaryPrompt = `基于以下搜索结果回答用户的问题：
+搜索结果：${JSON.stringify(searchResults.search_results)}
+用户问题：${userMessageContent}`;
+                        aiResponse = await this.getAIResponse(chatWindow, summaryPrompt);
+                        this.addMessage(chatWindow, 'assistant', aiResponse, searchResults.search_results);
+                    } else {
+                        if (this.isSearchEnabled) {
+                            aiResponse = "抱歉，我没有找到相关的搜索结果。让我试试直接回答你的问题。";
+                            this.addMessage(chatWindow, 'assistant', aiResponse);
                         }
-                    );
+                        aiResponse = await this.getAIResponse(chatWindow, userMessageContent);
+                        this.addMessage(chatWindow, 'assistant', aiResponse);
+                    }
 
-                    const reader = response.body.getReader();
-                    const decoder = new TextDecoder('utf-8');
-
-                    while (true) {
-                        const { done, value } = await reader.read();
-                        if (done) break;
-                        const chunk = decoder.decode(value, { stream: true });
-                        const lines = chunk.split('\n').filter(line => line.trim());
-                        for (const line of lines) {
-                            if (line === 'data: [DONE]') return;
-                            if (line.startsWith('data: ')) {
-                                const data = JSON.parse(line.slice(6));
-                                if (data.choices && data.choices.length > 0) {
-                                    const delta = data.choices[0].delta;
-                                    if (delta && delta.content) {
-                                        assistantMessage.content += delta.content;
-                                    }
-                                }
-                            }
-                        }
+                    // 保持最多6组上下文
+                    if (chatWindow.currentSession.length > 12) {
+                        chatWindow.currentSession = chatWindow.currentSession.slice(-12);
                     }
                 } catch (error) {
-                    assistantMessage.content = `请求失败: ${error.message}`;
+                    console.error('Error:', error);
+                    this.addMessage(chatWindow, 'assistant', '对不起，我无法处理您的请求。');
                 }
             };
 
@@ -185,6 +202,48 @@ export default {
             this.$nextTick(() => {
                 this.adjustChatWindowHeight();
             });
+        },
+        async performSearch(query) {
+            const response = await fetch(this.SEARCH_API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    question: query,
+                    api_key: process.env.VUE_APP_API_KEY
+                })
+            });
+            return await response.json();
+        },
+        async getAIResponse(chatWindow, prompt) {
+            const response = await fetch(
+                `${process.env.VUE_APP_API_BASE_URL}/v1/chat/completions`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${process.env.VUE_APP_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        messages: [
+                            { role: 'system', content: `你是一个友善的助手` },
+                            ...chatWindow.currentSession,
+                            { role: 'user', content: prompt }
+                        ],
+                        model: chatWindow.selectedModel,
+                        temperature: 0.5,
+                        presence_penalty: 2
+                    })
+                }
+            );
+
+            const data = await response.json();
+            if (data.choices && data.choices[0] && data.choices[0].message) {
+                return data.choices[0].message.content;
+            } else {
+                throw new Error('Unexpected response format');
+            }
         },
         handleResize() {
             this.isMobile = window.innerWidth <= 768;
@@ -208,6 +267,7 @@ export default {
     }
 };
 </script>
+
 
 <style scoped>
 .container {
