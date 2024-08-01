@@ -22,12 +22,12 @@
                                 <MarkdownRenderer :content="message.content" />
                             </div>
                             <details v-if="message.searchResults" class="search-results">
-                                <summary>点击查看搜索结果</summary>
-                                <div v-for="result in message.searchResults" :key="result.href" class="search-result-item">
-                                    <h3><a :href="result.href" target="_blank">{{ result.title }}</a></h3>
-                                    <p>{{ result.body }}</p>
-                                </div>
-                            </details>
+    <summary>点击查看搜索结果</summary>
+    <div v-for="result in message.searchResults" :key="result.href" class="search-result-item">
+        <a :href="result.href" target="_blank">{{ result.title }}</a>
+        <p>{{ result.body }}</p>
+    </div>
+</details>
                         </div>
                     </div>
                 </div>
@@ -530,13 +530,6 @@ input:checked + .slider:before {
 
 .search-results {
     margin-top: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px;
-}
-
-.search-results {
-    margin-top: 10px;
     background-color: #f9f9f9;
     border-radius: 5px;
     padding: 10px;
@@ -545,32 +538,31 @@ input:checked + .slider:before {
 .search-results summary {
     cursor: pointer;
     color: #2196F3;
+    margin-bottom: 10px;
 }
 
 .search-result-item {
-    margin-top: 10px;
-    border-bottom: 1px solid #eee;
+    margin-bottom: 15px;
     padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
 }
 
 .search-result-item:last-child {
     border-bottom: none;
 }
 
-.search-result-item h3 {
-    margin: 0;
-    font-size: 1em;
-}
-
 .search-result-item a {
+    display: block;
     color: #1a0dab;
     text-decoration: none;
+    font-size: 16px;
+    margin-bottom: 5px;
 }
 
 .search-result-item p {
-    margin: 5px 0 0;
-    font-size: 0.9em;
+    margin: 0;
     color: #545454;
+    font-size: 14px;
 }
 
 @media (max-width: 768px) {
