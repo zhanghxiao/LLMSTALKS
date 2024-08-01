@@ -108,7 +108,7 @@ export default {
             aiResponse = await this.getAIResponse(summaryPrompt);
             this.addMessage('assistant', aiResponse, searchResponse.search_results);
           } else {
-            aiResponse = "抱歉，我没有找到相关的搜索结果。让我试试直接回答你的问题。";
+            // aiResponse = "抱歉，我没有找到相关的搜索结果。让我试试直接回答你的问题。";
             this.addMessage('assistant', aiResponse);
           }
         } else {
