@@ -11,7 +11,7 @@
                         <div class="search-toggle">
                             <span>搜索功能</span>
                             <label class="switch">
-                                <input type="checkbox" v-model="isSearchEnabled" @change="toggleSearch">
+                                <input type="checkbox" v-model="chatWindow.isSearchEnabled" @change="toggleSearch(index)">
                                 <span class="slider round"></span>
                             </label>
                         </div>
@@ -98,14 +98,13 @@ export default {
         return {
             userInput: '',
             chatWindows: [
-                { messages: [], selectedModel: 'gpt-4o-mini', currentSession: [] },
-                { messages: [], selectedModel: 'gpt-4o-mini', currentSession: [] }
+                { messages: [], selectedModel: 'gpt-4o-mini', currentSession: [], isSearchEnabled: false },
+                { messages: [], selectedModel: 'gpt-4o-mini', currentSession: [], isSearchEnabled: false }
             ],
             models: this.getModelsFromEnv(),
             layout: 2,
             isMobile: false,
             showEmptyWindow: false,
-            isSearchEnabled: false,
             SEARCH_API_URL: 'https://mistpe-search.hf.space/search'
         };
     },
@@ -127,7 +126,7 @@ export default {
             
             if (currentLength < targetLength) {
                 for (let i = currentLength; i < targetLength; i++) {
-                    this.chatWindows.push({ messages: [], selectedModel: this.models[0], currentSession: [] });
+                    this.chatWindows.push({ messages: [], selectedModel: this.models[0], currentSession: [], isSearchEnabled: false });
                 }
             } else if (currentLength > targetLength) {
                 this.chatWindows.splice(targetLength);
@@ -135,13 +134,12 @@ export default {
             
             this.showEmptyWindow = this.isMobile;
         },
-        toggleSearch() {
-            const toggleMessage = this.isSearchEnabled
+        toggleSearch(index) {
+            const chatWindow = this.chatWindows[index];
+            const toggleMessage = chatWindow.isSearchEnabled
                 ? "搜索功能已开启，我现在可以上网查资料啦！😎"
                 : "搜索功能已关闭，接下来就看我自由发挥了";
-            this.chatWindows.forEach(chatWindow => {
-                this.addMessage(chatWindow, 'system', toggleMessage);
-            });
+            this.addMessage(chatWindow, 'system', toggleMessage);
         },
         addMessage(chatWindow, role, content, searchResults = null) {
             const message = { id: Date.now(), role, content };
@@ -162,24 +160,24 @@ export default {
             const userMessageContent = this.userInput;
             this.userInput = '';
 
-            let searchResults = null;
-            if (this.isSearchEnabled) {
-                searchResults = await this.performSearch(userMessageContent);
-            }
-
             const sendRequestToWindow = async (chatWindow) => {
                 this.addMessage(chatWindow, 'user', userMessageContent);
 
                 try {
                     let aiResponse;
-                    if (this.isSearchEnabled && searchResults && searchResults.search_results && searchResults.search_results.length > 0) {
+                    let searchResults = null;
+                    if (chatWindow.isSearchEnabled) {
+                        searchResults = await this.performSearch(userMessageContent);
+                    }
+
+                    if (chatWindow.isSearchEnabled && searchResults && searchResults.search_results && searchResults.search_results.length > 0) {
                         const summaryPrompt = `基于以下搜索结果回答用户的问题：
 搜索结果：${JSON.stringify(searchResults.search_results)}
 用户问题：${userMessageContent}`;
                         aiResponse = await this.getAIResponse(chatWindow, summaryPrompt);
                         this.addMessage(chatWindow, 'assistant', aiResponse, searchResults.search_results);
                     } else {
-                        if (this.isSearchEnabled) {
+                        if (chatWindow.isSearchEnabled) {
                             aiResponse = "抱歉，我没有找到相关的搜索结果。让我试试直接回答你的问题。";
                             this.addMessage(chatWindow, 'assistant', aiResponse);
                         }
@@ -268,7 +266,6 @@ export default {
 };
 </script>
 
-
 <style scoped>
 .container {
     display: flex;
@@ -320,7 +317,6 @@ export default {
     grid-template-columns: 1fr;
     grid-template-rows: repeat(4, 1fr);
 }
-
 .chat-windows.mobile.layout-4 {
     grid-template-columns: 1fr;
     grid-template-rows: repeat(5, 1fr);
@@ -450,13 +446,13 @@ export default {
 
 .content {
     padding: 1px;
-    padding-left: 10px; /* 你可以根据需要调整这个值 */
+    padding-left: 10px;
     padding-right: 10px;
     border-radius: 13px;
     word-wrap: break-word;
-    white-space: normal; /* 改为 normal，允许自然换行 */
+    white-space: normal;
     max-width: 100%;
-    line-height: 1.1; /* 调整行高，可以根据需要调整这个值 */
+    line-height: 1.1;
 }
 
 .user .content {
@@ -471,6 +467,89 @@ export default {
     border-bottom-left-radius: 4px;
 }
 
+.search-toggle {
+    display: flex;
+    align-items: center;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    margin-left: 10px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.search-results {
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.search-result-item {
+    margin-bottom: 10px;
+}
+
+.search-result-item h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.search-result-item p {
+    margin: 5px 0 0;
+    font-size: 14px;
+    color: #666;
+}
+
 @media (max-width: 768px) {
     .container {
         height: 100vh;
@@ -481,7 +560,7 @@ export default {
     }
 
     .chat-windows {
-        height: calc(100% - 160px); /* 增加高度以适应所有布局的额外空白窗口 */
+        height: calc(100% - 160px);
         margin-bottom: 10px;
     }
 
@@ -492,7 +571,7 @@ export default {
         right: 0;
         background-color: #fff;
         margin-top: 10px;
-        z-index: 1000; /* 确保输入区域始终在顶部 */
+        z-index: 1000;
     }
 }
 </style>
