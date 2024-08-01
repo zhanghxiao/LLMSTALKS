@@ -16,22 +16,22 @@
                             </label>
                         </div>
                     </div>
-<div class="chat-body">
-    <div v-for="message in chatWindow.messages" :key="message.id" :class="['message', message.role]">
-        <div class="content">
-            <MarkdownRenderer :content="message.content" />
-        </div>
-    </div>
-    <div v-if="message.searchResults" class="search-results-container">
-        <details class="search-results">
-            <summary>点击查看搜索结果</summary>
-            <div v-for="result in message.searchResults" :key="result.href" class="search-result-item">
-                <a :href="result.href" target="_blank">{{ result.title }}</a>
-                <p>{{ result.body }}</p>
-            </div>
-        </details>
-    </div>
-</div>
+                    <div class="chat-body">
+                        <div v-for="message in chatWindow.messages" :key="message.id" :class="['message', message.role]">
+                            <div class="content">
+                                <MarkdownRenderer :content="message.content" />
+                            </div>
+                        </div>
+                        <div v-if="message.searchResults" class="search-results-container">
+                            <details class="search-results">
+                                <summary>点击查看搜索结果</summary>
+                                <div v-for="result in message.searchResults" :key="result.href" class="search-result-item">
+                                    <a :href="result.href" target="_blank">{{ result.title }}</a>
+                                    <p>{{ result.body }}</p>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="input-area">
@@ -319,6 +319,7 @@ export default {
     grid-template-columns: 1fr;
     grid-template-rows: repeat(4, 1fr);
 }
+
 .chat-windows.mobile.layout-4 {
     grid-template-columns: 1fr;
     grid-template-rows: repeat(5, 1fr);
@@ -530,7 +531,6 @@ input:checked + .slider:before {
     border-radius: 50%;
 }
 
-
 .search-results-container {
     width: 100%;
     margin: 10px 0;
@@ -571,6 +571,7 @@ input:checked + .slider:before {
     color: #545454;
     font-size: 14px;
 }
+
 @media (max-width: 768px) {
     .container {
         height: 100vh;
