@@ -16,20 +16,22 @@
                             </label>
                         </div>
                     </div>
-                    <div v-for="message in chatWindow.messages" :key="message.id" class="message-container">
-    <div :class="['message', message.role]">
-        <div class="content">
-            <MarkdownRenderer :content="message.content" />
-        </div>
-    </div>
-    <details v-if="message.searchResults" class="search-results">
-        <summary>点击查看搜索结果</summary>
-        <div v-for="result in message.searchResults" :key="result.href" class="search-result-item">
-            <h3><a :href="result.href" target="_blank">{{ result.title }}</a></h3>
-            <p>{{ result.body }}</p>
-        </div>
-    </details>
-</div>
+                    <div class="chat-body">
+                        <div v-for="message in chatWindow.messages" :key="message.id" class="message-container">
+                            <div :class="['message', message.role]">
+                                <div class="content">
+                                    <MarkdownRenderer :content="message.content" />
+                                </div>
+                            </div>
+                            <details v-if="message.searchResults" class="search-results">
+                                <summary>点击查看搜索结果</summary>
+                                <div v-for="result in message.searchResults" :key="result.href" class="search-result-item">
+                                    <h3><a :href="result.href" target="_blank">{{ result.title }}</a></h3>
+                                    <p>{{ result.body }}</p>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="input-area">
