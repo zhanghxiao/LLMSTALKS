@@ -1,195 +1,180 @@
 <template>
-    <div class="container">
-        <div class="main">
-            <div class="chat-window" ref="chatWindow">
-                <div class="chat-header">
-                    <select v-model="selectedModel">
-                        <option v-for="model in models" :key="model" :value="model">{{ model }}</option>
-                    </select>
-                    <div class="search-toggle">
-                        <span>搜索功能</span>
-                        <label class="switch">
-                            <input type="checkbox" v-model="isSearchEnabled" @change="toggleSearch">
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                </div>
-                <div class="chat-body">
-                    <div v-for="message in messages" :key="message.id" :class="['message', message.role]">
-                        <div class="content">
-                            <MarkdownRenderer :content="message.content" />
-                        </div>
-                        <details v-if="message.searchResults" class="search-results">
-                            <summary>点击查看搜索结果</summary>
-                            <div v-for="result in message.searchResults" :key="result.href" class="search-result-item">
-                                <h3><a :href="result.href" target="_blank">{{ result.title }}</a></h3>
-                                <p>{{ result.body }}</p>
-                            </div>
-                        </details>
-                    </div>
-                </div>
-            </div>
-            <div class="input-container">
-                <input type="text" v-model="userInput" placeholder="输入消息..." @keypress.enter="sendMessage">
-                <button class="input-button" @click="sendMessage">发送</button>
-            </div>
+  <div class="container">
+    <div class="main">
+      <div class="chat-window" ref="chatWindow">
+        <div class="chat-header">
+          <select v-model="selectedModel">
+            <option v-for="model in models" :key="model" :value="model">{{ model }}</option>
+          </select>
+          <div class="search-toggle">
+            <span>搜索功能</span>
+            <label class="switch">
+              <input type="checkbox" v-model="isSearchEnabled" @change="toggleSearch">
+              <span class="slider round"></span>
+            </label>
+          </div>
         </div>
+        <div class="chat-body">
+          <div v-for="message in messages" :key="message.id" :class="['message', message.role]">
+            <div class="content">
+              <MarkdownRenderer :content="message.content" />
+            </div>
+            <details v-if="message.searchResults" class="search-results">
+              <summary>点击查看搜索结果</summary>
+              <div v-for="result in message.searchResults" :key="result.href" class="search-result-item">
+                <h3><a :href="result.href" target="_blank">{{ result.title }}</a></h3>
+                <p>{{ result.body }}</p>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+      <div class="input-container">
+        <input type="text" v-model="userInput" placeholder="输入消息..." @keypress.enter="sendMessage">
+        <button class="input-button" @click="sendMessage">发送</button>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
 import MarkdownRenderer from '@/components/MarkdownRenderer.vue';
 
 export default {
-    name: 'SingleModelChat',
-    components: {
-        MarkdownRenderer
+  name: 'SingleModelChat',
+  components: {
+    MarkdownRenderer
+  },
+  data() {
+    return {
+      userInput: '',
+      messages: [],
+      models: this.getModelsFromEnv(),
+      selectedModel: 'gpt-4o-mini',
+      isSearchEnabled: false,
+      currentSession: [],
+      SEARCH_API_URL: 'https://mistpe-search.hf.space/search'
+    };
+  },
+  methods: {
+    getModelsFromEnv() {
+      const modelsEnv = process.env.VUE_APP_MODELS || '';
+      return modelsEnv.split(',').map(model => model.trim());
     },
-    data() {
-        return {
-            userInput: '',
-            messages: [],
-            models: this.getModelsFromEnv(),
-            selectedModel: 'gpt-4o-mini',
-            isSearchEnabled: false,
-            currentSession: []
-        };
+    adjustChatWindowHeight() {
+      const chatWindow = this.$refs.chatWindow;
+      if (chatWindow) {
+        const inputContainerHeight = this.$el.querySelector('.input-container').offsetHeight;
+        const chatWindowOffsetTop = chatWindow.getBoundingClientRect().top;
+        const windowHeight = window.innerHeight;
+        chatWindow.style.height = `${windowHeight - chatWindowOffsetTop - inputContainerHeight}px`;
+      }
     },
-    methods: {
-        getModelsFromEnv() {
-            const modelsEnv = process.env.VUE_APP_MODELS || '';
-            return modelsEnv.split(',').map(model => model.trim());
-        },
-        adjustChatWindowHeight() {
-            const chatWindow = this.$refs.chatWindow;
-            if (chatWindow) {
-                const inputContainerHeight = this.$el.querySelector('.input-container').offsetHeight;
-                const chatWindowOffsetTop = chatWindow.getBoundingClientRect().top;
-                const windowHeight = window.innerHeight;
-                chatWindow.style.height = `${windowHeight - chatWindowOffsetTop - inputContainerHeight}px`;
-            }
-        },
-        toggleSearch() {
-            const toggleMessage = this.isSearchEnabled
-                ? "搜索功能已开启，我现在可以上网查资料啦！😎"
-                : "搜索功能已关闭，接下来就看我自由发挥了";
-            this.addMessage('assistant', toggleMessage);
-        },
-        addMessage(role, content, searchResults = null) {
-            const message = { id: Date.now(), role, content };
-            if (searchResults) {
-                message.searchResults = searchResults;
-            }
-            this.messages.push(message);
-            if (role !== 'system') {
-                this.currentSession.push({ role, content });
-            }
-            this.$nextTick(() => {
-                const chatBody = this.$el.querySelector('.chat-body');
-                chatBody.scrollTop = chatBody.scrollHeight;
-            });
-        },
-        async sendMessage() {
-            if (!this.userInput.trim()) return;
+    toggleSearch() {
+      const toggleMessage = this.isSearchEnabled
+        ? "搜索功能已开启，我现在可以上网查资料啦！😎"
+        : "搜索功能已关闭，接下来就看我自由发挥了";
+      this.addMessage('system', toggleMessage);
+    },
+    addMessage(role, content, searchResults = null) {
+      const message = { id: Date.now(), role, content };
+      if (searchResults) {
+        message.searchResults = searchResults;
+      }
+      this.messages.push(message);
+      if (role !== 'system') {
+        this.currentSession.push({ role, content });
+      }
+      this.$nextTick(() => {
+        const chatBody = this.$refs.chatWindow.querySelector('.chat-body');
+        chatBody.scrollTop = chatBody.scrollHeight;
+      });
+    },
+    async sendMessage() {
+      if (!this.userInput.trim()) return;
 
-            this.addMessage('user', this.userInput);
-            const userMessageContent = this.userInput;
-            this.userInput = '';
+      this.addMessage('user', this.userInput);
+      const userMessageContent = this.userInput;
+      this.userInput = '';
 
-            try {
-                let aiResponse;
-                if (this.isSearchEnabled) {
-                    const searchResponse = await this.performSearch(userMessageContent);
-                    if (searchResponse.search_results && searchResponse.search_results.length > 0) {
-                        const summaryPrompt = `基于以下搜索结果回答用户的问题：
+      try {
+        let aiResponse;
+        if (this.isSearchEnabled) {
+          const searchResponse = await this.performSearch(userMessageContent);
+          if (searchResponse.search_results && searchResponse.search_results.length > 0) {
+            const summaryPrompt = `基于以下搜索结果回答用户的问题：
 搜索结果：${JSON.stringify(searchResponse.search_results)}
 用户问题：${userMessageContent}`;
-                        aiResponse = await this.getAIResponse(summaryPrompt);
-                        this.addMessage('assistant', aiResponse, searchResponse.search_results);
-                    } else {
-                        aiResponse = "抱歉，我没有找到相关的搜索结果。让我试试直接回答你的问题。";
-                        this.addMessage('assistant', aiResponse);
-                    }
-                } else {
-                    aiResponse = await this.getAIResponse(userMessageContent);
-                    this.addMessage('assistant', aiResponse);
-                }
-
-                // 保持最多6组上下文
-                if (this.currentSession.length > 12) {
-                    this.currentSession = this.currentSession.slice(-12);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                this.addMessage('assistant', '对不起，我无法处理您的请求。');
-            }
-        },
-        async performSearch(query) {
-            const response = await fetch('https://mistpe-search.hf.space/search', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    question: query,
-                    api_key: process.env.VUE_APP_API_KEY
-                })
-            });
-            return await response.json();
-        },
-        async getAIResponse(prompt) {
-            const response = await fetch(
-                `${process.env.VUE_APP_API_BASE_URL}/v1/chat/completions`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${process.env.VUE_APP_API_KEY}`
-                    },
-                    body: JSON.stringify({
-                        messages: [
-                            { role: 'system', content: `你是一个友善的助手` },
-                            ...this.currentSession,
-                            { role: 'user', content: prompt }
-                        ],
-                        stream: true,
-                        model: this.selectedModel,
-                        temperature: 0.5,
-                        presence_penalty: 2
-                    })
-                }
-            );
-
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder('utf-8');
-            let result = '';
-
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                const chunk = decoder.decode(value, { stream: true });
-                const lines = chunk.split('\n').filter(line => line.trim());
-                for (const line of lines) {
-                    if (line === 'data: [DONE]') return result;
-                    if (line.startsWith('data: ')) {
-                        const data = JSON.parse(line.slice(6));
-                        if (data.choices[0].delta && data.choices[0].delta.content) {
-                            result += data.choices[0].delta.content;
-                        }
-                    }
-                }
-            }
-
-            return result;
+            aiResponse = await this.getAIResponse(summaryPrompt);
+            this.addMessage('assistant', aiResponse, searchResponse.search_results);
+          } else {
+            aiResponse = "抱歉，我没有找到相关的搜索结果。让我试试直接回答你的问题。";
+            this.addMessage('assistant', aiResponse);
+          }
+        } else {
+          aiResponse = await this.getAIResponse(userMessageContent);
+          this.addMessage('assistant', aiResponse);
         }
+
+        // 保持最多6组上下文
+        if (this.currentSession.length > 12) {
+          this.currentSession = this.currentSession.slice(-12);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        this.addMessage('assistant', '对不起，我无法处理您的请求。');
+      }
     },
-    mounted() {
-        this.adjustChatWindowHeight();
-        window.addEventListener('resize', this.adjustChatWindowHeight);
+    async performSearch(query) {
+      const response = await fetch(this.SEARCH_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          question: query,
+          api_key: process.env.VUE_APP_API_KEY
+        })
+      });
+      return await response.json();
     },
-    beforeDestroy() {
-        window.removeEventListener('resize', this.adjustChatWindowHeight);
+    async getAIResponse(prompt) {
+      const response = await fetch(
+        `${process.env.VUE_APP_API_BASE_URL}/v1/chat/completions`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.VUE_APP_API_KEY}`
+          },
+          body: JSON.stringify({
+            messages: [
+              { role: 'system', content: `你是一个友善的助手` },
+              ...this.currentSession,
+              { role: 'user', content: prompt }
+            ],
+            model: this.selectedModel,
+            temperature: 0.5,
+            presence_penalty: 2
+          })
+        }
+      );
+
+      const data = await response.json();
+      if (data.choices && data.choices[0] && data.choices[0].message) {
+        return data.choices[0].message.content;
+      } else {
+        throw new Error('Unexpected response format');
+      }
     }
+  },
+  mounted() {
+    this.adjustChatWindowHeight();
+    window.addEventListener('resize', this.adjustChatWindowHeight);
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.adjustChatWindowHeight);
+  }
 }
 </script>
 
