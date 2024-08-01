@@ -275,22 +275,25 @@ export default {
 }
 
 .content {
-    padding: 10px;
+    padding: 1px;
+    padding-left: 10px; /* 你可以根据需要调整这个值 */
+    padding-right: 10px;
     border-radius: 13px;
     word-wrap: break-word;
-    white-space: normal;
-    max-width: 80%;
-    line-height: 1.4;
+    white-space: normal; /* 改为 normal，允许自然换行 */
+    max-width: 100%;
+    line-height: 1.1; /* 调整行高，可以根据需要调整这个值 */
 }
+
 
 .user .content {
     background-color: #e0f7fa;
-    color: #505050;
+    color:#505050;
     border-bottom-right-radius: 4px;
 }
 
 .assistant .content {
-    background-color: #f0f0f0;
+    background-color: #e0f7fa;
     color: #505050;
     border-bottom-left-radius: 4px;
 }
