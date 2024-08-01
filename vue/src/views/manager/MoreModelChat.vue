@@ -16,20 +16,22 @@
                             </label>
                         </div>
                     </div>
-                    <div class="chat-body">
-                        <div v-for="message in chatWindow.messages" :key="message.id" :class="['message', message.role]">
-                            <div class="content">
-                                <MarkdownRenderer :content="message.content" />
-                            </div>
-                            <details v-if="message.searchResults" class="search-results">
-    <summary>点击查看搜索结果</summary>
-    <div v-for="result in message.searchResults" :key="result.href" class="search-result-item">
-        <a :href="result.href" target="_blank">{{ result.title }}</a>
-        <p>{{ result.body }}</p>
+<div class="chat-body">
+    <div v-for="message in chatWindow.messages" :key="message.id" :class="['message', message.role]">
+        <div class="content">
+            <MarkdownRenderer :content="message.content" />
+        </div>
     </div>
-</details>
-                        </div>
-                    </div>
+    <div v-if="message.searchResults" class="search-results-container">
+        <details class="search-results">
+            <summary>点击查看搜索结果</summary>
+            <div v-for="result in message.searchResults" :key="result.href" class="search-result-item">
+                <a :href="result.href" target="_blank">{{ result.title }}</a>
+                <p>{{ result.body }}</p>
+            </div>
+        </details>
+    </div>
+</div>
                 </div>
             </div>
             <div class="input-area">
@@ -528,8 +530,13 @@ input:checked + .slider:before {
     border-radius: 50%;
 }
 
+
+.search-results-container {
+    width: 100%;
+    margin: 10px 0;
+}
+
 .search-results {
-    margin-top: 10px;
     background-color: #f9f9f9;
     border-radius: 5px;
     padding: 10px;
@@ -564,7 +571,6 @@ input:checked + .slider:before {
     color: #545454;
     font-size: 14px;
 }
-
 @media (max-width: 768px) {
     .container {
         height: 100vh;
