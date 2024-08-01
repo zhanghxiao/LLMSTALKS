@@ -179,10 +179,10 @@ export default {
                         aiResponse = await this.getAIResponse(chatWindow, summaryPrompt);
                         this.addMessage(chatWindow, 'assistant', aiResponse, searchResults.search_results);
                     } else {
-                        if (chatWindow.isSearchEnabled) {
-                            aiResponse = "抱歉，我没有找到相关的搜索结果。让我试试直接回答你的问题。";
-                            this.addMessage(chatWindow, 'assistant', aiResponse);
-                        }
+                        // if (chatWindow.isSearchEnabled) {
+                        //     aiResponse = "抱歉，我没有找到相关的搜索结果。让我试试直接回答你的问题。";
+                        //     this.addMessage(chatWindow, 'assistant', aiResponse);
+                        // }
                         aiResponse = await this.getAIResponse(chatWindow, userMessageContent);
                         this.addMessage(chatWindow, 'assistant', aiResponse);
                     }
