@@ -9,7 +9,7 @@
                             <option v-for="model in models" :key="model" :value="model">{{ model }}</option>
                         </select>
                         <div class="search-toggle">
-                            <span>搜索功能</span>
+                            <span>联网</span>
                             <label class="switch">
                                 <input type="checkbox" v-model="chatWindow.isSearchEnabled" @change="toggleSearch(index)">
                                 <span class="slider round"></span>
@@ -18,11 +18,6 @@
                     </div>
                     <div class="chat-body">
                         <div v-for="message in chatWindow.messages" :key="message.id" class="message-container">
-                            <div :class="['message', message.role]">
-                                <div class="content">
-                                    <MarkdownRenderer :content="message.content" />
-                                </div>
-                            </div>
                             <details v-if="message.searchResults" class="search-results">
                                 <summary>点击查看搜索结果</summary>
                                 <div v-for="result in message.searchResults" :key="result.href" class="search-result-item">
@@ -30,6 +25,11 @@
                                     <p>{{ result.body }}</p>
                                 </div>
                             </details>
+							<div :class="['message', message.role]">
+                                <div class="content">
+                                    <MarkdownRenderer :content="message.content" />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -530,16 +530,10 @@ input:checked + .slider:before {
     border-radius: 50%;
 }
 
-.search-results {
-    margin-top: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px;
-}
 
 .search-results {
     margin-top: 10px;
-    background-color: #f9f9f9;
+    background-color: #fff;
     border-radius: 5px;
     padding: 10px;
 }
